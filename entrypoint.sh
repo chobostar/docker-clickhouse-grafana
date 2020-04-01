@@ -14,7 +14,7 @@ curl -s -H "Content-Type: application/json" \
         "type":"vertamedia-clickhouse-datasource",
         "typeLogoUrl":"public/plugins/vertamedia-clickhouse-datasource/img/clickhouse_logo.svg",
         "access":"proxy",
-        "url":"http://clickhouse:8123",
+        "url":"http://clickhouse:8123?max_query_size=268435456&max_ast_elements=1000000",
         "password":"",
         "user":"",
         "database":"",

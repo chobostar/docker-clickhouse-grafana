@@ -1,0 +1,2 @@
+clickhouse-driver[lz4]
+psycopg2==2.7.7
