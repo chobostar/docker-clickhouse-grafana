@@ -10,8 +10,9 @@ def fetch_rows() -> List[Dict]:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
                 SELECT 
-                    datname, 
-                    left(query, 100) as query, 
+                    datname,
+                    usename username,
+                    left(query, 10000) as query, 
                     sum(calls) as calls, 
                     sum(total_time) as total_time, 
                     sum(rows) as rows,
@@ -27,18 +28,18 @@ def fetch_rows() -> List[Dict]:
                     sum(temp_blks_written) as temp_blks_written,
                     sum(blk_read_time) as blk_read_time,
                     sum(blk_write_time) as blk_write_time
-                FROM pg_stat_statements JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid 
-                GROUP BY queryid, query, datname
+                FROM pg_stat_statements 
+                JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid
+                JOIN pg_user ON pg_stat_statements.userid = pg_user.usesysid
+                GROUP BY queryid, query, datname, usename
             """)
             return cur.fetchall()
 
 
 def get_rows(cluster_name:str, hostname:str) -> List[Dict]:
     rows = fetch_rows()
-    print(rows)
     for row in rows:
         row.update({"cluster_name": cluster_name, "hostname": hostname})
-        print(row)
     return rows
 
 
@@ -64,7 +65,8 @@ def push_to_clickhouse(rows:List[Dict]):
                 "blk_write_time,"
                 "cluster_name,"
                 "hostname,"
-                "datname) VALUES",
+                "datname,"
+                "username) VALUES",
                 rows
         )
 

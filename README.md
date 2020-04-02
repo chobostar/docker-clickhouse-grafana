@@ -63,7 +63,7 @@ FROM
     FROM
 (
         SELECT
-            (intDiv(toUInt32(created_at), 60) * 60) * 1000 AS t,
+            (intDiv(toUInt32(created_at), $interval) * $interval) * 1000 AS t,
             query,
             max(total_time) AS c
         FROM pg.pg_stat_statements
@@ -79,6 +79,7 @@ FROM
             query ASC,
             t ASC
 )
+    WHERE rate >= 0
 )
 GROUP BY t
 ORDER BY t ASC
