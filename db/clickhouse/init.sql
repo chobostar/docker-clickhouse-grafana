@@ -25,3 +25,6 @@ CREATE TABLE IF NOT EXISTS pg.pg_stat_statements (
 	blk_write_time Float64
 ) ENGINE = MergeTree(created_date, (created_at, cluster_name, hostname, datname, username), 8192)
 TTL created_date + INTERVAL 10 DAY DELETE;
+
+--https://clickhouse.tech/docs/en/operations/table_engines/buffer/
+CREATE TABLE IF NOT EXISTS pg.pg_stat_statements_buffer AS pg.pg_stat_statements ENGINE = Buffer(pg, pg_stat_statements, 16, 10, 30, 1000, 10000, 1000000, 10000000)

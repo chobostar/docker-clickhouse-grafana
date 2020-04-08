@@ -5,20 +5,19 @@ services:
     ports:
     - "8123:8123"
     - "9000:9000"
-  grafana-storage:
-    image: busybox:latest
-    volumes:
-      - /var/lib/grafana
   grafana:
-    image: qxip/clickhouse-grafana
+    image: grafana/grafana
     ports:
      - "3000:3000"
-    volumes_from:
-      - grafana-storage
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards/provisioning:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards/files:/var/lib/grafana/dashboards
     environment:
       GF_INSTALL_PLUGINS: "grafana-piechart-panel,vertamedia-clickhouse-datasource"
       GF_SECURITY_ADMIN_USER: "admin"
       GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
   postgres:
     image: postgres:11
     ports:
