@@ -7,6 +7,7 @@ down:
 migrate:
 	docker-compose exec -T clickhouse clickhouse-client -mn < ./db/clickhouse/init.sql
 	docker-compose exec -T postgres psql -U postgres  < ./db/postgres/init.sql
+	docker-compose exec -T postgres pgbench -U postgres -i
 
 run:
 	docker-compose exec -T postgres pgbench -U postgres --time 600 &
